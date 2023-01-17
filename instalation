@@ -1,0 +1,123 @@
+#!/bin/bash
+
+USER="ivam"
+URL_ANDROID_STUDIO="https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2022.1.1.19/android-studio-2022.1.1.19-linux.tar.gz"
+INS_DEV=false
+INS_GAME=false
+INS_STUDIO=false
+INS_CRYPTO=false
+
+echo "Removendo pacotes desnecessários"
+sudo zypper rm -y libreoffice* 
+sudo zypper rm -y evolution
+sudo zypper rm -y gnome-chess 
+sudo zypper rm -y gnome-mahjongg 
+sudo zypper rm -y gnome-mines 
+sudo zypper rm -y pidgin
+sudo zypper rm -y polari
+sudo zypper rm -y quadrapassel
+sudo zypper rm -y swell-foop
+sudo zypper rm -y gnome-sudoku
+sudo zypper rm -y totem
+
+echo "Instalando Apps Básicos de Sistema"
+sudo zypper in -y neofetch 
+sudo zypper in -y gparted
+sudo zypper in -y geary
+
+echo "Instalando Flatpak Apps"
+sudo zypper in -y flatpak
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+echo "Instalando Droidcam"
+cd ~/Tools
+wget -O droidcam_latest.zip https://files.dev47apps.net/linux/droidcam_1.8.2.zip
+unzip droidcam_latest.zip -d droidcam
+cd droidcam 
+sudo ./install-client
+rm -rf ~/Tools/droidcam_latest.zip
+
+if [$INS_CRYPTO]
+   then
+	echo "Instalando Ledger"
+	sudo zypper in -y ledger
+	sudo zypper in -y libfuse2
+	wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_udev_rules.sh | sudo bash
+	mkdir ~/AppImage 
+   fi
+
+
+if [$INS_DEV] 
+   then
+   	echo "Instalando Desenvolvimento Módulo"
+   	sudo zypper in -y git
+   	wget https://download.oracle.com/java/17/archive/jdk-17.0.5_linux-x64_bin.rpm
+   	sudo rpm -ivh ./jdk-17.0.5_linux-x64_bin.rpm
+   	rm -rf ./jdk-17.0.5_linux-x64_bin.rpm
+   	mkdir -p ~/Tools/android-sdk
+   	cd ~/Tools
+   	wget $URL_ANDROID_STUDIO
+   	tar xfz android-studio-*-linux.tar.gz
+   	rm -rf android-studio-*-linux.tar.gz
+   	if [ -s ~/.local/share/applications/AndroidStudio.desktop ]
+     	   then
+       		rm -rf ~/.local/share/applications/AndroidStudio.desktop
+     	   fi
+     	echo "[Desktop Entry]
+Type=Application
+Exec=/home/$USER/Tools/android-studio/bin/studio.sh
+Path=/home/$USER/Tools/android-studio/bin/
+Name=Android Studio
+GenericName=IDE de Desenvolviemnto Android
+Icon=/home/$USER/Tools/android-studio/bin/studio.svg
+Terminal=false
+Categories=Launcher;Develop;" >> ~/.local/share/applications/AndroidStudio.desktop
+    	sudo chmod 755 ~/.local/share/applications/AndroidStudio.desktop
+    	sudo flatpak install -y flathub rest.insomnia.Insomnia
+   fi
+
+if [$INS_GAME]
+   then
+	sudo zypper in -y steam
+   fi
+
+if [$INS_STUDIO]
+   then
+	echo "Instalando Apps de Edição"
+	sudo zypper in -y audacity
+	sudo zypper in -y kdenlive
+	sudo zypper in -y vlc
+	sudo zypper in -y vlc-codecs
+	sudo zypper in -y k3b-codecs
+	sudo zypper in -y ffmpeg
+	sudo zypper in -y lame
+	sudo zypper in -y gstreamer-plugins-libav
+	sudo zypper in -y gstreamer-plugins-bad
+	sudo zypper in -y gstreamer-plugins-ugly
+	sudo zypper in -y gstreamer-plugins-good
+	sudo zypper in -y gstreamer-fluendo-mp3 
+	sudo zypper in -y libdvdcss2
+	sudo flatpak install -y flathub com.obsproject.Studio
+   fi
+
+sudo flatpak install -y flathub com.brave.Browser
+sudo flatpak install -y flathub com.spotify.Client
+sudo flatpak install -y flathub org.onlyoffice.desktopeditors
+sudo flatpak install -y flathub com.microsoft.Teams
+sudo flatpak install -y flathub com.discordapp.Discord
+sudo flatpak install -y flathub io.github.mimbrero.WhatsAppDesktop
+sudo flatpak install -y flathub org.telegram.desktop
+sudo flatpak install -y flathub io.github.shiftey.Desktop
+sudo flatpak install -y flathub com.slack.Slack
+sudo flatpak install -y flathub com.belmoussaoui.Authenticator
+sudo flatpak install -y flathub org.gnome.Calendar
+sudo flatpak install -y flathub io.appflowy.AppFlowy
+sudo flatpak install -y flathub com.ktechpit.wonderwall
+sudo flatpak install -y flathub org.gnome.World.PikaBackup
+sudo flatpak install -y flathub org.nickvision.tubeconverter
+
+echo "Atualizando o Sistema"
+sudo zypper packages --orphaned
+sudo zypper --non-interactive ref
+sudo zypper --non-interactive dup
+sudo flatpak update -y

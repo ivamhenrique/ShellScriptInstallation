@@ -1,0 +1,7 @@
+#!/bin/bash
+sudo zypper packages --orphaned
+sudo zypper --non-interactive ref
+sudo zypper --non-interactive dup
+sudo flatpak repair
+sudo flatpak update -y
+neofetch
