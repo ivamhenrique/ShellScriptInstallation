@@ -79,6 +79,7 @@ Categories=Launcher;Develop;" >> ~/.local/share/applications/AndroidStudio.deskt
 if [$INS_GAME]
    then
 	sudo zypper in -y steam
+	sudo zypper in -y lutris
    fi
 
 if [$INS_STUDIO]
