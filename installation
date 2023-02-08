@@ -1,11 +1,11 @@
 #!/bin/bash
 
 USER="ivam"
-URL_ANDROID_STUDIO="https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2021.3.1.1/android-studio-2021.3.1.1-linux.tar.gz"
-INS_DEV=false
+URL_ANDROID_STUDIO="android-studio-2021.3.1.1-linux.tar.gz"
+INS_DEV=true
 INS_GAME=false
-INS_STUDIO=false
-INS_CRYPTO=false
+INS_STUDIO=true
+INS_CRYPTO=true
 
 echo "Removendo pacotes desnecessários"
 sudo zypper rm -y libreoffice* 
@@ -19,6 +19,7 @@ sudo zypper rm -y quadrapassel
 sudo zypper rm -y swell-foop
 sudo zypper rm -y gnome-sudoku
 sudo zypper rm -y totem
+sudo zypper rm -y iagno
 
 echo "Instalando Apps Básicos de Sistema"
 sudo zypper in -y neofetch 
@@ -50,6 +51,9 @@ if [$INS_CRYPTO]
 if [$INS_DEV] 
    then
    	echo "Instalando Desenvolvimento Módulo"
+   	sudo -y zypper addrepo https://download.opensuse.org/repositories/home:MasterPatricko/openSUSE_Tumbleweed/home:MasterPatricko.repo
+   	sudo zypper ref
+   	sudo zypper in -y scrcpy
    	sudo zypper in -y git
    	wget https://download.oracle.com/java/17/archive/jdk-17.0.5_linux-x64_bin.rpm
    	sudo rpm -ivh ./jdk-17.0.5_linux-x64_bin.rpm
